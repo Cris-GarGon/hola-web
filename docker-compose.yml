@@ -1,6 +1,38 @@
 version: "3.0"
 services: 
   rdbm:
-    image: mariadb
+    image: mariadb:10.3.16
     environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_ROOT_PASSWORD: "devops"
+      MYSQL_USER: "mortal"
+      MYSQL_PASSWORD: "kombat"
+      MYSQL_DATABASE: "mydb"
+    volumes:
+      - db:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5.0.4
+    ports:
+      - "8080:80"
+    environment:
+      PMA_ARBITRARY: 1
+    depends_on:
+      - rdbm
+
+  wordpress:
+    image: wordpress
+    ports:
+      - "8081:80"
+    environment:
+      WORDPRESS_DB_HOST: rdbm
+      WORDPRESS_DB_USER: "mortal"
+      WORDPRESS_DB_PASSWORD: "kombat"
+      WORDPRESS_DB_NAME: "mydb"
+    volumes:
+      - wordpress:/var/www/html
+    depends_on:
+      - rdbm
+
+volumes:
+  db:
+  wordpress:
